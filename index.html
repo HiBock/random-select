@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ランダム選曲マスター</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 1rem;
+            color: #333;
+        }
+        .main-container { /* メインの選曲エリア用コンテナ */
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem; /* スマホ用に少し縮小、PCでは2rem */
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 550px;
+            margin-bottom: 1rem;
+        }
+        .excluded-list-container { /* 除外リスト用コンテナ */
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 1rem; /* スマホ用に少し縮小、PCでは1.5rem */
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08);
+            text-align: left;
+            width: 100%;
+            max-width: 550px;
+            margin-top: 1rem;
+        }
+        .excluded-list-container h2 {
+            font-size: 1.125rem; /* スマホ用に少し縮小、PCでは1.25rem */
+            font-weight: 700;
+            color: #4a5568; /* text-gray-600 */
+            margin-bottom: 1rem;
+            text-align: center;
+            border-bottom: 2px solid #cbd5e0;
+            padding-bottom: 0.5rem;
+        }
+        #excludedSongsUl {
+            list-style: none;
+            padding: 0;
+            max-height: 150px; /* スマホ用に少し縮小、PCでは200px */
+            overflow-y: auto; /* スクロール可能に */
+        }
+        #excludedSongsUl li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            background-color: #f8fafc; /* bg-slate-50 */
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        #excludedSongsUl li .song-title {
+            flex-grow: 1;
+            margin-right: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .remove-excluded-button {
+            background-color: #fca5a5; /* bg-red-300 */
+            color: #7f1d1d; /* text-red-800 */
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem; /* text-xs */
+            border: 1px solid #fecaca; /* border-red-200 */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .remove-excluded-button:hover {
+            background-color: #f87171; /* bg-red-400 */
+            color: white;
+        }
+
+        .song-display {
+            min-height: 4rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            background-color: #f0f4f8;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.125rem; /* スマホ用に少し縮小、PCでは1.25rem */
+            color: #2c3e50;
+            font-weight: 700;
+            font-family: 'Roboto', sans-serif;
+            border: 2px solid #cbd5e0;
+            transition: background-color 0.3s, color 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+        .song-display.rolling::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(45deg, #e0e7ff, #e0e7ff 10px, #c7d2fe 10px, #c7d2fe 20px);
+            animation: rolling-bg 0.2s linear infinite;
+            opacity: 0.3;
+        }
+        @keyframes rolling-bg {
+            0% { background-position: 0 0; }
+            100% { background-position: 28px 0; }
+        }
+
+        .button {
+            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            font-weight: 700;
+            padding: 0.875rem 1.5rem; /* スマホ用に横パディング調整、PCでは2rem */
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%; /* スマホで幅いっぱいに */
+            max-width: 300px; /* PCでの最大幅 */
+            display: block; /* 中央寄せのため */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(47, 128, 237, 0.4), 0 4px 6px -2px rgba(47, 128, 237, 0.2);
+        }
+        .button:active {
+            transform: translateY(0px) scale(0.98);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .small-button {
+            background-image: linear-gradient(to right, #059669 0%, #a3e635 100%);
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            width: auto; /* small-buttonは幅いっぱいではない */
+            max-width: none;
+        }
+        .small-button:hover {
+             box-shadow: 0 6px 10px -3px rgba(5, 150, 105, 0.4), 0 2px 4px -2px rgba(5, 150, 105, 0.2);
+        }
+        #excludeSongButton {
+            background-image: linear-gradient(to right, #d946ef 0%, #db2777 100%);
+            margin-top: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+             width: 100%; /* スマホで幅いっぱいに */
+            max-width: 300px; /* PCでの最大幅 */
+        }
+
+
+        h1 {
+            font-size: 1.75rem; /* スマホ用に少し縮小、PCでは2rem */
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1.5rem; /* スマホ用に少し縮小 */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .filter-header {
+            display: flex;
+            flex-direction: column; /* スマホでは縦並び */
+            align-items: stretch; /* 幅を合わせる */
+            margin-bottom: 0.75rem;
+        }
+        .filter-header > div { /* ボタンのコンテナ */
+            margin-top: 0.5rem;
+            display: flex;
+            justify-content: space-around; /* ボタン間にスペース */
+        }
+        .filter-container legend {
+            font-weight: 700;
+            color: #4a5568;
+            font-size: 1.125rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid #718096;
+            text-align: center; /* スマホでは中央寄せ */
+            width: 100%;
+        }
+        #genreCheckboxContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* スマホ用に最小幅調整 */
+            gap: 0.5rem; /* スマホ用にギャップ調整 */
+            padding: 0.75rem; /* スマホ用にパディング調整 */
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        .genre-checkbox-item {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .genre-checkbox-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .genre-checkbox-item input[type="checkbox"] {
+            margin-right: 0.5rem;
+            width: 1.125rem;
+            height: 1.125rem;
+            accent-color: #4f46e5;
+            cursor: pointer;
+        }
+        .genre-checkbox-item label {
+            font-size: 0.875rem;
+            color: #374151;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* PC向けのスタイル調整 (例: 画面幅640px以上) */
+        @media (min-width: 640px) {
+            .main-container {
+                padding: 2rem;
+            }
+            .excluded-list-container {
+                padding: 1.5rem;
+            }
+            .excluded-list-container h2 {
+                font-size: 1.25rem;
+            }
+            #excludedSongsUl {
+                max-height: 200px;
+            }
+            .song-display {
+                font-size: 1.25rem;
+            }
+            .button { /* メインボタンのPCでのスタイル */
+                padding: 0.875rem 2rem;
+                width: auto; /* PCでは幅自動 */
+            }
+            #excludeSongButton { /* 除外ボタンのPCでのスタイル */
+                 width: auto; /* PCでは幅自動 */
+            }
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+            .filter-header {
+                flex-direction: row; /* PCでは横並びに戻す */
+                justify-content: space-between;
+                align-items: center;
+            }
+            .filter-header > div {
+                margin-top: 0;
+            }
+            .filter-container legend {
+                text-align: left; /* PCでは左寄せ */
+                width: auto;
+            }
+            #genreCheckboxContainer {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1>ランダム選曲マスター</h1>
+
+        <fieldset class="filter-container">
+            <div class="filter-header">
+                <legend>難易度フィルター</legend>
+                <div>
+                    <button id="selectAllButton" class="button small-button">すべて選択</button>
+                    <button id="deselectAllButton" class="button small-button" style="background-image: linear-gradient(to right, #ef4444 0%, #f97316 100%);">すべて解除</button>
+                </div>
+            </div>
+            <div id="genreCheckboxContainer">
+                </div>
+        </fieldset>
+
+        <div id="songDisplay" class="song-display">
+            ここに曲名が表示されます
+        </div>
+        <button id="excludeSongButton" class="button" style="display: none;">この曲を除外リストへ</button>
+
+        <button id="generateButton" class="button">
+            選曲スタート！
+        </button>
+    </div>
+
+    <div class="excluded-list-container" id="excludedListSection" style="display: none;">
+        <h2>除外リスト</h2>
+        <ul id="excludedSongsUl">
+            </ul>
+        <p id="noExcludedSongsMessage" style="text-align:center; color: #6b7280; margin-top:1rem;">除外された曲はありません。</p>
+    </div>
+
+    <script>
+        const rawSongDataByGenre = {
+          "SS": `
+            Infinite Rebellion
+            彁（裏）
+            CRUXNAUT
+            The Future of the 太鼓ドラム（裏）
+            神竜 ～Shinryu～（裏）
+            Central Dogma Pt.1（裏）
+            憎悪と醜悪の花束（裏）
+            ダーク・エクス・マキナ♡
+            第六天魔王（表）
+            第六天魔王（裏）
+            ダンガンノーツ（裏）
+            Destination 2F29
+            ドンカマ2000
+            23時54分、陽の旅路へのプレリュード（裏）
+            Vixtory（裏）
+            poxei♦DOON
+            幽玄ノ乱
+            ラ・モレーナ・クモナイ（裏）
+          `,
+          "S+": `
+            アンリミテッドゲームズ（裏）
+            Emma（裏）
+            !!!カオスタイム!!!
+            †††カオスタイム the DARK†††
+            疾風怒濤（裏）
+            双竜ノ乱
+            !!!チルノのパーフェクトさんすうタイム!!!
+            トロいか2000
+            まださいたま2000
+            モノクロボイス（裏）
+          `,
+          "S": `
+            オペレート・ミー（裏）
+            彁（表）
+            仮想現実のテレスコープ（裏）
+            CUT! into the FUTURE（裏）
+            Calamity Fortune（裏）
+            業 -善なる神とこの世の悪について-（裏）
+            狂瀾怒濤（裏）
+            Coquette
+            最果の魔法使い（裏）
+            Synthesis.（裏）
+            スーハー2000
+            続・〆ドレー2000
+            そして勇者は眠りにつく（裏）
+            Taiko Drum Monster（裏）
+            魑魅魍魎
+            Challengers
+            ≠ＭＭ
+            とける（裏）
+            初音ミクの消失‐劇場版‐（裏）
+            星屑ストラック（裏）
+            4+1のそれぞれの未来（裏）
+            Lδchesis（裏）
+            λ7708
+            わら得る2000
+            Xa（裏）
+            氷竜～Kooryu～（裏）
+            Genesis Ray（裏）
+            たいこの2000
+            チャーリーダッシュ！
+            Nosferatu（裏）
+            Hurtling Boys
+            POLARiSNAUT
+            UFO Swingin'
+          `,
+          "A+": `
+            アムピト◇リーテー
+            美しく忙しきドナウ（裏）
+            ouroboros -twin stroke of the end-
+            χ談
+            カラフル
+            彼は誰時の誘惑（裏）
+            ココドコ？多分ドッカ島！（裏）
+            コネクトカラーズ
+            GORI × GORI × SafaRI（裏）
+            The Future of the 太鼓ドラム（表）
+            万戈イム－一ノ十
+            青天の黎明
+            Central Dogma Pt.2
+            Taiko Drum Monster（表）
+            DEBSTEP!
+            Dreadnought（裏）
+            Don't Stop the Game
+            HARDCOREノ心得
+            幕末維新譚
+            †バチ!ムチ!?マッスルキングダム†
+            Hello, Worldooon!!（裏）
+            パン vs ごはん！ 大決戦！（裏）
+            for Q（裏）
+            プチポチ
+            Behemoth
+            まるくてはやくてすさまじいリズム
+            モノクロームユートピア
+            ラパスの虹（裏）
+            赤と白薔薇の魔女
+            あめふりのロンド（裏）
+            ON SAY GO SAY（裏）
+            カルメン組曲 一番終曲（裏）
+            森羅万象
+            デッド・オア・ダイ
+            23時54分、陽の旅路へのプレリュード（表）
+            にゃーにゃーにゃー
+            メタナイトの逆襲メドレー（裏）
+            8OROCHI（裏）
+          `,
+          "A": `
+            哀 want U
+            蒼鷺之火（裏）
+            或ル不和
+            VERTeX
+            ウルトラマンX（裏）
+            郢曲／暁闇
+            Agent Hustle & Dr. Hassle（表）
+            GERBERA
+            SAVAGE DELIGHT
+            〆ドレー2000
+            重金属フューギティブ
+            Xevel
+            其方、激昂
+            SORA-VII シグナスウォール
+            超絶技巧系少女
+            テトラリュトモスフォビア
+            天泣の律
+            転生〈TENSEI〉-喜与志が待つ強者-（裏）
+            Toon Town's Toys' Tune
+            ナイトメア・サバイバー（裏）
+            BATTLE NO.1
+            Honey Heartbeat ～10 Stars Mix～（裏）
+            Parousia
+            パン vs ごはん！ 大決戦！（表）
+            FLOWER（裏）
+            Mood Swing（裏）
+            もぺもぺ
+            螺旋周回軌道（裏）
+            LECIEL GLISSANDO
+            LUNATiC CiRCUiT
+            冷凍庫CJ ～嗚呼面太鼓ブラザーズ～
+            ARMAGEΔDON
+            Unwelcome School (MRM REMIX)（裏）
+            Irregular Clock（裏）
+            EterNal Ring
+            懐中庭園を持つ少女
+            絡繰廻廊
+            Caribbean Knight
+            GIGALODOON（裏）
+            鼓立あおはる学園校歌
+            束ね糸
+            チルノのパーフェクトさんすう教室➈周年バージョン（裏）
+            儚姫は原初に舞う（裏）
+            ひよこ鑑定士さん
+            BLAZING VORTEX（裏）
+            Player's High
+          `,
+          "B": `
+            ANiMA
+            Altale（裏）
+            Aleph-0
+            UNDEAD HEART(怒りのWarriors)
+            イオシス秋の爆食祭2024
+            怒槌
+            OK I’m blue rat
+            KAGEKIYO（裏）
+            CUT! into the FUTURE（表）
+            極圏
+            沓の子を打つ（裏）
+            クラポルポルスカ
+            Got more raves?（裏）
+            秋竜 ～Shiuryu～（裏）
+            疾風怒濤（表）
+            承認欲Q
+            Singularity Game
+            晨星ト鵺
+            SUPERNOVA（裏）
+            Stick Trick ShowTime!!
+            月読命
+            電脳幻夜の星言詠
+            トイマチック☆パレード!!
+            Doom Noiz
+            Hello, Mr.JOKER
+            人のお金で焼肉を食したい！（裏）
+            FUJIN Rumble
+            ヘイラ（裏）
+            Help me, さいたま2000!!
+            またさいたま2000
+            三瀬川乱舞（裏）
+            メカデス。（裏）
+            めためた☆ゆにば～すっ！（裏）
+            モノクロボイス（表）
+            Re：End of a Dream（裏）
+            竜と黒炎の姫君（裏）
+            練習曲Op.10-4（裏）
+            Rotter Tarmination（裏）
+            六本の薔薇と采の歌（裏）
+            What's in the box?
+            Aragami
+            Garakuta Doll Play（裏）
+            カラフルボイス（裏）
+            Calculator
+            Kill My Fortune（裏）
+            ゲゲゲの鬼太郎（裏）
+            刻竜 ～Kokuryu～（表）
+            神竜 ～Shinryu～（表）
+            Scarlet Lance
+            星河一天
+            憎悪と醜悪の花束（表）
+            Destr0yer（裏）
+            ドドドドドンだフル！（裏）
+            はたラク2000
+            Vixtory（表）
+            秘ナルメジェドノ悲ナル憂鬱
+            メタルホーク BGM1
+            memoria ficta
+            燎原ノ舞
+          `,
+          "C": `
+            愛と浄罪の森
+            アサガオ
+            あの日出会えたキセキ
+            Abyss of hell（裏）
+            天照
+            Ignis Danse
+            Illusion Flare
+            うちゅうひこうし冒険譚
+            ex寅 Trap!!
+            Evidence of evil
+            カラ鞠の花
+            気焔万丈神楽
+            ギガンティックO.T.N（裏）
+            きゅうくらりん（裏）
+            共奏鼓祭（裏）
+            Chronomia
+            弧
+            濃紅
+            ゴーストマスク
+            Goldfish City
+            ココロボ
+            ゴッドソング（裏）
+            God Ray
+            鼓舞曲「閻魔」
+            紫煌ノ乱
+            蛇鉄
+            須佐之男
+            Spectral Rider
+            Soulway
+            D's Adventure Note
+            D絶対！SAMURAIインザレイン（裏）
+            てんぢく2000
+            とける（表）
+            Doppelgangers（裏）
+            白鳥の湖～still a duckling～（裏）
+            ハンロック
+            ペットショップ大戦
+            MagiCatz
+            六華の舞
+            wonderful ROUTINE
+            あなたとトゥラッタッタ♪（裏）
+            アンリミテッドゲームズ（表）
+            Gloria
+            Central Dogma Pt.1（表）
+            弩蚊怒夏
+            夏祭り / ジッタリン・ジン（裏）
+            Purple Rose Fusion
+            ミュージック・リボルバー（裏）
+            MEGALOVANIA（裏）
+            4+1のそれぞれの未来
+          `,
+          "D": `
+            アキバ20XX
+            Aloft in the wind（裏）
+            イガク（裏）
+            頂
+            INSPION
+            ウィーアー！（裏）
+            waitin' for u
+            Angel Halo
+            オーバード（裏）
+            オーブの祈り
+            GIGALODOON（表）
+            きたさいたま2000
+            キャラメル・ジャンキヰ
+            Surf Zapping
+            最終鬼畜妹フランドール・S
+            Silent Jealousy（裏）
+            セイクリッド ルイン（裏）
+            零の交響曲（裏）
+            そつおめしき2ばん
+            十露盤2000
+            Diving Drive
+            ダンガンノーツ（表）
+            天下統一録
+            Dogbite
+            ドドンガド～ン（裏）
+            No Gravity
+            ノるどん2000
+            VICTORIA
+            ピコピコ ルイン（裏）
+            VIVIVIVID
+            FREEDOM DiVE↓
+            Venomous（裏）
+            星屑ストラック（表）
+            8OROCHI（表）
+            YOAKE
+            夜桜謝肉祭（裏）
+            ラヴ♡スパイス♡ライクユー!!!
+            Libera Ray
+            詩謳兎揺蕩兎
+            Extreme End
+            ゴーゴー・キッチン（裏）
+            タイコタイム（裏）
+            乱数調整のリバースシンデレラ（裏）
+          `,
+          "E": `
+            R.I.
+            蒼の旋律（裏）
+            朱の旋律
+            EkiBEN2000
+            Kamikaze Remix
+            Calamity Fortune（表）
+            キューティー☆デモニック☆魔人エモ!!
+            さちさちにしてあげる♪（裏）
+            スーパーD＆D ～完全にリードしてアイマイミー～
+            SUPERNOVA（表）
+            SstTAarR*
+            タイコロール
+            タベルナ2000
+            儚姫は原初に舞う（表）
+            ヒバナ（裏）
+            Blessed Bouquet Buskers
+            よーいドン！
+            そつおめしき
+            初音ミクの激唱（表）
+            初音ミクの激唱（裏）
+            Black Rose Apostle（表）
+            Black Rose Apostle（裏）
+            マツヨイナイトバグ（裏）
+          `,
+          "F": `
+            X-DAY2000
+            Clotho クロートー
+            旋風ノ舞【天】（表）
+            旋風ノ舞【天】（裏）
+            チルノのパーフェクトさんすう教室（裏）
+            ネクロファンタジア ～ Arr.Demetori
+            拝啓ドッペルゲンガー
+            mint tears
+          `,
+          "未分類": `
+            雲間を游ぐ
+            潮騒205号SSS線
+          `,
+        };
+
+        let songsWithGenre = [];
+        for (const genre in rawSongDataByGenre) {
+            if (rawSongDataByGenre.hasOwnProperty(genre)) {
+                const songTitlesText = rawSongDataByGenre[genre];
+                const titlesArray = songTitlesText.split('\n')
+                    .map(title => title.trim())
+                    .filter(title => title !== ""); 
+                
+                titlesArray.forEach(title => {
+                    songsWithGenre.push({ title: title, genre: genre });
+                });
+            }
+        }
+
+        const songDisplay = document.getElementById('songDisplay');
+        const generateButton = document.getElementById('generateButton');
+        const genreCheckboxContainer = document.getElementById('genreCheckboxContainer');
+        const selectAllButton = document.getElementById('selectAllButton');
+        const deselectAllButton = document.getElementById('deselectAllButton');
+        const excludeSongButton = document.getElementById('excludeSongButton');
+        const excludedSongsUl = document.getElementById('excludedSongsUl');
+        const excludedListSection = document.getElementById('excludedListSection');
+        const noExcludedSongsMessage = document.getElementById('noExcludedSongsMessage');
+        
+        const genreOrder = ["SS", "S+", "S", "A+", "A", "B", "C", "D", "E", "F", "未分類"];
+        let excludedSongs = []; 
+        let currentDisplayedSongTitle = null; 
+
+        function populateGenreCheckboxes() {
+            const availableGenres = [...new Set(songsWithGenre.map(song => song.genre))];
+            const sortedGenres = availableGenres.sort((a, b) => {
+                const indexA = genreOrder.indexOf(a);
+                const indexB = genreOrder.indexOf(b);
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+                return a.localeCompare(b);
+            });
+
+            genreCheckboxContainer.innerHTML = '';
+            sortedGenres.forEach(genre => {
+                const checkboxId = `genre-${genre.replace(/\s+/g, '-').replace(/[+♦]/g, '')}`;
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('genre-checkbox-item');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = checkboxId;
+                checkbox.value = genre;
+                checkbox.name = 'genre';
+                const label = document.createElement('label');
+                label.htmlFor = checkboxId;
+                label.textContent = genre;
+                itemDiv.appendChild(checkbox);
+                itemDiv.appendChild(label);
+                genreCheckboxContainer.appendChild(itemDiv);
+            });
+        }
+
+        function updateExcludedListDisplay() {
+            excludedSongsUl.innerHTML = '';
+            if (excludedSongs.length === 0) {
+                noExcludedSongsMessage.style.display = 'block';
+                excludedListSection.style.display = 'none';
+            } else {
+                excludedListSection.style.display = 'block';
+                noExcludedSongsMessage.style.display = 'none';
+                excludedSongs.forEach(songTitle => {
+                    const li = document.createElement('li');
+                    const titleSpan = document.createElement('span');
+                    titleSpan.classList.add('song-title');
+                    titleSpan.textContent = songTitle;
+                    li.appendChild(titleSpan);
+                    const removeButton = document.createElement('button');
+                    removeButton.textContent = 'リストから戻す';
+                    removeButton.classList.add('remove-excluded-button');
+                    removeButton.addEventListener('click', () => {
+                        excludedSongs = excludedSongs.filter(title => title !== songTitle);
+                        updateExcludedListDisplay();
+                        songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
+                        excludeSongButton.style.display = 'none';
+                        currentDisplayedSongTitle = null;
+                    });
+                    li.appendChild(removeButton);
+                    excludedSongsUl.appendChild(li);
+                });
+            }
+        }
+
+        let isRolling = false; 
+
+        generateButton.addEventListener('click', function() {
+            if (isRolling) return; 
+
+            const selectedGenreCheckboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]:checked');
+            const selectedGenres = Array.from(selectedGenreCheckboxes).map(cb => cb.value);
+
+            if (selectedGenres.length === 0) {
+                songDisplay.textContent = "難易度を選択してください";
+                songDisplay.classList.remove('rolling');
+                excludeSongButton.style.display = 'none';
+                currentDisplayedSongTitle = null;
+                if (generateButton.disabled) generateButton.disabled = false;
+                return; 
+            }
+
+            const availableSongs = songsWithGenre.filter(song => 
+                selectedGenres.includes(song.genre) && !excludedSongs.includes(song.title)
+            );
+
+            if (availableSongs.length === 0) {
+                songDisplay.textContent = "該当曲なし (すべて除外済みか、選択難易度に曲がありません)";
+                songDisplay.classList.remove('rolling');
+                excludeSongButton.style.display = 'none';
+                currentDisplayedSongTitle = null;
+                if (generateButton.disabled) generateButton.disabled = false;
+                return;
+            }
+
+            isRolling = true;
+            generateButton.disabled = true; 
+            excludeSongButton.style.display = 'none'; 
+            songDisplay.classList.add('rolling');
+            songDisplay.textContent = '選曲中...';
+            currentDisplayedSongTitle = null;
+
+            let rollCount = 0;
+            const maxRolls = 20; 
+            const rollInterval = 100; 
+
+            const rollAnimation = setInterval(() => {
+                const tempRandomIndex = Math.floor(Math.random() * availableSongs.length);
+                songDisplay.textContent = availableSongs[tempRandomIndex].title;
+                rollCount++;
+                if (rollCount >= maxRolls) {
+                    clearInterval(rollAnimation);
+                    const finalRandomIndex = Math.floor(Math.random() * availableSongs.length);
+                    const finalSong = availableSongs[finalRandomIndex];
+                    songDisplay.textContent = finalSong.title;
+                    currentDisplayedSongTitle = finalSong.title; 
+                    songDisplay.classList.remove('rolling');
+                    isRolling = false;
+                    generateButton.disabled = false; 
+                    excludeSongButton.style.display = 'inline-block'; 
+                }
+            }, rollInterval);
+        });
+        
+        genreCheckboxContainer.addEventListener('change', function(event) {
+            if (event.target.type === 'checkbox') {
+                 songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
+                 excludeSongButton.style.display = 'none';
+                 currentDisplayedSongTitle = null;
+            }
+        });
+
+        selectAllButton.addEventListener('click', function() {
+            const checkboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]');
+            checkboxes.forEach(cb => cb.checked = true);
+            songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
+            excludeSongButton.style.display = 'none';
+            currentDisplayedSongTitle = null;
+        });
+
+        deselectAllButton.addEventListener('click', function() {
+            const checkboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
+            excludeSongButton.style.display = 'none';
+            currentDisplayedSongTitle = null;
+        });
+
+        excludeSongButton.addEventListener('click', function() {
+            if (currentDisplayedSongTitle && !excludedSongs.includes(currentDisplayedSongTitle)) {
+                excludedSongs.push(currentDisplayedSongTitle);
+                updateExcludedListDisplay();
+                songDisplay.textContent = `「${currentDisplayedSongTitle}」を除外しました`;
+                excludeSongButton.style.display = 'none';
+                currentDisplayedSongTitle = null;
+            }
+        });
+
+        populateGenreCheckboxes();
+        updateExcludedListDisplay(); 
+        songDisplay.textContent = "難易度を選んでボタンを押してください";
+    </script>
+</body>
+</html>
