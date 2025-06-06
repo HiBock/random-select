@@ -146,7 +146,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .small-button {
-            background-image: linear-gradient(to right, #059669 0%, #a3e635 100%);
             padding: 0.375rem 0.75rem;
             font-size: 0.75rem;
             font-weight: 500;
@@ -155,9 +154,25 @@
             width: auto; /* small-buttonは幅いっぱいではない */
             max-width: none;
         }
-        .small-button:hover {
+        .small-button.green {
+            background-image: linear-gradient(to right, #059669 0%, #a3e635 100%);
+        }
+        .small-button.green:hover {
              box-shadow: 0 6px 10px -3px rgba(5, 150, 105, 0.4), 0 2px 4px -2px rgba(5, 150, 105, 0.2);
         }
+        .small-button.red {
+            background-image: linear-gradient(to right, #ef4444 0%, #f97316 100%);
+        }
+        .small-button.red:hover {
+            box-shadow: 0 6px 10px -3px rgba(239, 68, 68, 0.4), 0 2px 4px -2px rgba(239, 68, 68, 0.2);
+        }
+        .small-button.purple {
+            background-image: linear-gradient(to right, #8b5cf6 0%, #c084fc 100%); /* 紫系のグラデーション */
+        }
+        .small-button.purple:hover {
+            box-shadow: 0 6px 10px -3px rgba(139, 92, 246, 0.4), 0 2px 4px -2px rgba(139, 92, 246, 0.2);
+        }
+
         #excludeSongButton {
             background-image: linear-gradient(to right, #d946ef 0%, #db2777 100%);
             margin-top: 0.75rem;
@@ -166,6 +181,24 @@
             font-size: 0.875rem;
              width: 100%; /* スマホで幅いっぱいに */
             max-width: 300px; /* PCでの最大幅 */
+        }
+        
+        .excluded-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #cbd5e0;
+            padding-bottom: 0.5rem;
+        }
+        .excluded-list-header h2 {
+            margin-bottom: 0; /* flexboxで配置されるため、h2のデフォルトマージンを調整 */
+            text-align: left; /* 左寄せに戻す */
+            width: auto; /* 幅を自動調整 */
+        }
+        .excluded-list-header .small-button {
+            margin-left: 1rem; /* ボタンとh2の間にスペース */
+            margin-top: 0; /* デフォルトマージンをリセット */
         }
 
 
@@ -186,6 +219,8 @@
             margin-top: 0.5rem;
             display: flex;
             justify-content: space-around; /* ボタン間にスペース */
+            flex-wrap: wrap; /* ボタンが複数ある場合に折り返す */
+            gap: 0.5rem; /* ボタン間の隙間 */
         }
         .filter-container legend {
             font-weight: 700;
@@ -256,6 +291,9 @@
             #excludeSongButton { /* 除外ボタンのPCでのスタイル */
                  width: auto; /* PCでは幅自動 */
             }
+            .filter-header > div {
+                gap: 0.75rem; /* PCでのボタン間の隙間 */
+            }
             h1 {
                 font-size: 2rem;
                 margin-bottom: 2rem;
@@ -288,8 +326,8 @@
             <div class="filter-header">
                 <legend>難易度フィルター</legend>
                 <div>
-                    <button id="selectAllButton" class="button small-button">すべて選択</button>
-                    <button id="deselectAllButton" class="button small-button" style="background-image: linear-gradient(to right, #ef4444 0%, #f97316 100%);">すべて解除</button>
+                    <button id="selectAllButton" class="button small-button green">すべて選択</button>
+                    <button id="deselectAllButton" class="button small-button red">すべて解除</button>
                 </div>
             </div>
             <div id="genreCheckboxContainer">
@@ -307,7 +345,10 @@
     </div>
 
     <div class="excluded-list-container" id="excludedListSection" style="display: none;">
-        <h2>除外リスト</h2>
+        <div class="excluded-list-header">
+            <h2>除外リスト</h2>
+            <button id="returnAllFromExcludedButton" class="button small-button purple">すべてリストから戻す</button>
+        </div>
         <ul id="excludedSongsUl">
             </ul>
         <p id="noExcludedSongsMessage" style="text-align:center; color: #6b7280; margin-top:1rem;">除外された曲はありません。</p>
@@ -692,6 +733,9 @@
         const excludedSongsUl = document.getElementById('excludedSongsUl');
         const excludedListSection = document.getElementById('excludedListSection');
         const noExcludedSongsMessage = document.getElementById('noExcludedSongsMessage');
+        // 新しく追加するボタンの要素を取得
+        const returnAllFromExcludedButton = document.getElementById('returnAllFromExcludedButton');
+
 
         const genreOrder = ["SS", "S+", "S", "A+", "A", "B", "C", "D", "E", "F", "未分類"];
         let excludedSongs = [];
@@ -884,6 +928,17 @@
             excludeSongButton.style.display = 'none';
             currentDisplayedSongTitle = null;
             saveSettings(); // Save settings on deselect all
+        });
+
+        // Event listener for the new "すべてリストから戻す" button
+        returnAllFromExcludedButton.addEventListener('click', function() {
+            excludedSongs = []; // Clear the excluded songs array
+            updateExcludedListDisplay(); // Update the displayed list
+            songDisplay.textContent = "「選曲スタート！」ボタンを押してください"; // Reset song display message
+            excludeSongButton.style.display = 'none'; // Hide exclude button
+            currentDisplayedSongTitle = null; // Clear currently displayed song
+            saveSettings(); // Save the updated (empty) excluded list
+            console.log("All songs returned from excluded list."); // For debugging
         });
 
         excludeSongButton.addEventListener('click', function() {
