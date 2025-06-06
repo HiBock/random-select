@@ -666,7 +666,6 @@
           "未分類": `
             雲間を游ぐ
             潮騒205号SSS線
-            SoulStone -闇喰イサァカス団-
           `,
         };
 
@@ -697,6 +696,44 @@
         const genreOrder = ["SS", "S+", "S", "A+", "A", "B", "C", "D", "E", "F", "未分類"];
         let excludedSongs = [];
         let currentDisplayedSongTitle = null;
+
+        // Local Storage Keys
+        const LOCAL_STORAGE_GENRES_KEY = 'selectedGenres';
+        const LOCAL_STORAGE_EXCLUDED_KEY = 'excludedSongs';
+
+        // Function to save current settings to local storage
+        function saveSettings() {
+            const selectedGenreCheckboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]:checked');
+            const selectedGenresToSave = Array.from(selectedGenreCheckboxes).map(cb => cb.value);
+            localStorage.setItem(LOCAL_STORAGE_GENRES_KEY, JSON.stringify(selectedGenresToSave));
+            localStorage.setItem(LOCAL_STORAGE_EXCLUDED_KEY, JSON.stringify(excludedSongs));
+            console.log("Settings saved."); // For debugging
+        }
+
+        // Function to load settings from local storage
+        function loadSettings() {
+            const savedGenresString = localStorage.getItem(LOCAL_STORAGE_GENRES_KEY);
+            const savedExcludedString = localStorage.getItem(LOCAL_STORAGE_EXCLUDED_KEY);
+
+            if (savedGenresString) {
+                const savedGenres = JSON.parse(savedGenresString);
+                // Apply loaded genres to checkboxes
+                const checkboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]');
+                checkboxes.forEach(cb => {
+                    cb.checked = savedGenres.includes(cb.value);
+                });
+            } else {
+                // If no genres saved, select all by default for initial load
+                const checkboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]');
+                checkboxes.forEach(cb => cb.checked = true);
+            }
+
+            if (savedExcludedString) {
+                excludedSongs = JSON.parse(savedExcludedString);
+            }
+            updateExcludedListDisplay(); // Update excluded list display based on loaded data
+            songDisplay.textContent = "「選曲スタート！」ボタンを押してください"; // Set initial display message
+        }
 
         function populateGenreCheckboxes() {
             const availableGenres = [...new Set(songsWithGenre.map(song => song.genre))];
@@ -755,6 +792,7 @@
                         songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
                         excludeSongButton.style.display = 'none';
                         currentDisplayedSongTitle = null;
+                        saveSettings(); // Save settings after removing a song
                     });
                     li.appendChild(removeButton);
                     excludedSongsUl.appendChild(li);
@@ -826,6 +864,7 @@
                  songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
                  excludeSongButton.style.display = 'none';
                  currentDisplayedSongTitle = null;
+                 saveSettings(); // Save settings on genre change
             }
         });
 
@@ -835,6 +874,7 @@
             songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
             excludeSongButton.style.display = 'none';
             currentDisplayedSongTitle = null;
+            saveSettings(); // Save settings on select all
         });
 
         deselectAllButton.addEventListener('click', function() {
@@ -843,6 +883,7 @@
             songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
             excludeSongButton.style.display = 'none';
             currentDisplayedSongTitle = null;
+            saveSettings(); // Save settings on deselect all
         });
 
         excludeSongButton.addEventListener('click', function() {
@@ -852,12 +893,13 @@
                 songDisplay.textContent = `「${currentDisplayedSongTitle}」を除外しました`;
                 excludeSongButton.style.display = 'none';
                 currentDisplayedSongTitle = null;
+                saveSettings(); // Save settings after excluding a song
             }
         });
 
-        populateGenreCheckboxes();
-        updateExcludedListDisplay();
-        songDisplay.textContent = "難易度を選んでボタンを押してください";
+        // Initial setup calls:
+        populateGenreCheckboxes(); // Must run first to create checkboxes
+        loadSettings(); // Then load saved settings and apply them
     </script>
 </body>
 </html>
