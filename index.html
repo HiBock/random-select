@@ -676,8 +676,8 @@
                 const songTitlesText = rawSongDataByGenre[genre];
                 const titlesArray = songTitlesText.split('\n')
                     .map(title => title.trim())
-                    .filter(title => title !== ""); 
-                
+                    .filter(title => title !== "");
+
                 titlesArray.forEach(title => {
                     songsWithGenre.push({ title: title, genre: genre });
                 });
@@ -693,10 +693,10 @@
         const excludedSongsUl = document.getElementById('excludedSongsUl');
         const excludedListSection = document.getElementById('excludedListSection');
         const noExcludedSongsMessage = document.getElementById('noExcludedSongsMessage');
-        
+
         const genreOrder = ["SS", "S+", "S", "A+", "A", "B", "C", "D", "E", "F", "未分類"];
-        let excludedSongs = []; 
-        let currentDisplayedSongTitle = null; 
+        let excludedSongs = [];
+        let currentDisplayedSongTitle = null;
 
         function populateGenreCheckboxes() {
             const availableGenres = [...new Set(songsWithGenre.map(song => song.genre))];
@@ -711,7 +711,11 @@
 
             genreCheckboxContainer.innerHTML = '';
             sortedGenres.forEach(genre => {
-                const checkboxId = `genre-${genre.replace(/\s+/g, '-').replace(/[+♦]/g, '')}`;
+                // Ensure unique IDs by not sanitizing characters that differentiate genres
+                // Replace problematic characters in IDs with an underscore or similar if necessary,
+                // but ensure the resulting ID is still unique.
+                // For '+', use 'plus'. For '♦', use 'diamond'.
+                const checkboxId = `genre-${genre.replace(/\+/g, 'plus').replace(/♦/g, 'diamond')}`;
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('genre-checkbox-item');
                 const checkbox = document.createElement('input');
@@ -720,7 +724,7 @@
                 checkbox.value = genre;
                 checkbox.name = 'genre';
                 const label = document.createElement('label');
-                label.htmlFor = checkboxId;
+                label.htmlFor = checkboxId; // Label's htmlFor must match the checkbox's ID
                 label.textContent = genre;
                 itemDiv.appendChild(checkbox);
                 itemDiv.appendChild(label);
@@ -758,10 +762,10 @@
             }
         }
 
-        let isRolling = false; 
+        let isRolling = false;
 
         generateButton.addEventListener('click', function() {
-            if (isRolling) return; 
+            if (isRolling) return;
 
             const selectedGenreCheckboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]:checked');
             const selectedGenres = Array.from(selectedGenreCheckboxes).map(cb => cb.value);
@@ -772,10 +776,10 @@
                 excludeSongButton.style.display = 'none';
                 currentDisplayedSongTitle = null;
                 if (generateButton.disabled) generateButton.disabled = false;
-                return; 
+                return;
             }
 
-            const availableSongs = songsWithGenre.filter(song => 
+            const availableSongs = songsWithGenre.filter(song =>
                 selectedGenres.includes(song.genre) && !excludedSongs.includes(song.title)
             );
 
@@ -789,15 +793,15 @@
             }
 
             isRolling = true;
-            generateButton.disabled = true; 
-            excludeSongButton.style.display = 'none'; 
+            generateButton.disabled = true;
+            excludeSongButton.style.display = 'none';
             songDisplay.classList.add('rolling');
             songDisplay.textContent = '選曲中...';
             currentDisplayedSongTitle = null;
 
             let rollCount = 0;
-            const maxRolls = 20; 
-            const rollInterval = 100; 
+            const maxRolls = 20;
+            const rollInterval = 100;
 
             const rollAnimation = setInterval(() => {
                 const tempRandomIndex = Math.floor(Math.random() * availableSongs.length);
@@ -808,15 +812,15 @@
                     const finalRandomIndex = Math.floor(Math.random() * availableSongs.length);
                     const finalSong = availableSongs[finalRandomIndex];
                     songDisplay.textContent = finalSong.title;
-                    currentDisplayedSongTitle = finalSong.title; 
+                    currentDisplayedSongTitle = finalSong.title;
                     songDisplay.classList.remove('rolling');
                     isRolling = false;
-                    generateButton.disabled = false; 
-                    excludeSongButton.style.display = 'inline-block'; 
+                    generateButton.disabled = false;
+                    excludeSongButton.style.display = 'inline-block';
                 }
             }, rollInterval);
         });
-        
+
         genreCheckboxContainer.addEventListener('change', function(event) {
             if (event.target.type === 'checkbox') {
                  songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
@@ -852,7 +856,7 @@
         });
 
         populateGenreCheckboxes();
-        updateExcludedListDisplay(); 
+        updateExcludedListDisplay();
         songDisplay.textContent = "難易度を選んでボタンを押してください";
     </script>
 </body>
