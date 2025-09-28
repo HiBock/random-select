@@ -146,6 +146,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .small-button {
+            background-image: linear-gradient(to right, #059669 0%, #a3e635 100%);
             padding: 0.375rem 0.75rem;
             font-size: 0.75rem;
             font-weight: 500;
@@ -154,25 +155,9 @@
             width: auto; /* small-buttonは幅いっぱいではない */
             max-width: none;
         }
-        .small-button.green {
-            background-image: linear-gradient(to right, #059669 0%, #a3e635 100%);
-        }
-        .small-button.green:hover {
+        .small-button:hover {
              box-shadow: 0 6px 10px -3px rgba(5, 150, 105, 0.4), 0 2px 4px -2px rgba(5, 150, 105, 0.2);
         }
-        .small-button.red {
-            background-image: linear-gradient(to right, #ef4444 0%, #f97316 100%);
-        }
-        .small-button.red:hover {
-            box-shadow: 0 6px 10px -3px rgba(239, 68, 68, 0.4), 0 2px 4px -2px rgba(239, 68, 68, 0.2);
-        }
-        .small-button.purple {
-            background-image: linear-gradient(to right, #8b5cf6 0%, #c084fc 100%); /* 紫系のグラデーション */
-        }
-        .small-button.purple:hover {
-            box-shadow: 0 6px 10px -3px rgba(139, 92, 246, 0.4), 0 2px 4px -2px rgba(139, 92, 246, 0.2);
-        }
-
         #excludeSongButton {
             background-image: linear-gradient(to right, #d946ef 0%, #db2777 100%);
             margin-top: 0.75rem;
@@ -181,24 +166,6 @@
             font-size: 0.875rem;
              width: 100%; /* スマホで幅いっぱいに */
             max-width: 300px; /* PCでの最大幅 */
-        }
-        
-        .excluded-list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #cbd5e0;
-            padding-bottom: 0.5rem;
-        }
-        .excluded-list-header h2 {
-            margin-bottom: 0; /* flexboxで配置されるため、h2のデフォルトマージンを調整 */
-            text-align: left; /* 左寄せに戻す */
-            width: auto; /* 幅を自動調整 */
-        }
-        .excluded-list-header .small-button {
-            margin-left: 1rem; /* ボタンとh2の間にスペース */
-            margin-top: 0; /* デフォルトマージンをリセット */
         }
 
 
@@ -219,8 +186,6 @@
             margin-top: 0.5rem;
             display: flex;
             justify-content: space-around; /* ボタン間にスペース */
-            flex-wrap: wrap; /* ボタンが複数ある場合に折り返す */
-            gap: 0.5rem; /* ボタン間の隙間 */
         }
         .filter-container legend {
             font-weight: 700;
@@ -291,9 +256,6 @@
             #excludeSongButton { /* 除外ボタンのPCでのスタイル */
                  width: auto; /* PCでは幅自動 */
             }
-            .filter-header > div {
-                gap: 0.75rem; /* PCでのボタン間の隙間 */
-            }
             h1 {
                 font-size: 2rem;
                 margin-bottom: 2rem;
@@ -326,8 +288,8 @@
             <div class="filter-header">
                 <legend>難易度フィルター</legend>
                 <div>
-                    <button id="selectAllButton" class="button small-button green">すべて選択</button>
-                    <button id="deselectAllButton" class="button small-button red">すべて解除</button>
+                    <button id="selectAllButton" class="button small-button">すべて選択</button>
+                    <button id="deselectAllButton" class="button small-button" style="background-image: linear-gradient(to right, #ef4444 0%, #f97316 100%);">すべて解除</button>
                 </div>
             </div>
             <div id="genreCheckboxContainer">
@@ -345,10 +307,7 @@
     </div>
 
     <div class="excluded-list-container" id="excludedListSection" style="display: none;">
-        <div class="excluded-list-header">
-            <h2>除外リスト</h2>
-            <button id="returnAllFromExcludedButton" class="button small-button purple">すべてリストから戻す</button>
-        </div>
+        <h2>除外リスト</h2>
         <ul id="excludedSongsUl">
             </ul>
         <p id="noExcludedSongsMessage" style="text-align:center; color: #6b7280; margin-top:1rem;">除外された曲はありません。</p>
@@ -362,7 +321,6 @@
             CRUXNAUT
             The Future of the 太鼓ドラム（裏）
             神竜 ～Shinryu～（裏）
-            Central Dogma Pt.1（裏）
             憎悪と醜悪の花束（裏）
             ダーク・エクス・マキナ♡
             第六天魔王（表）
@@ -374,59 +332,63 @@
             Vixtory（裏）
             poxei♦DOON
             幽玄ノ乱
-            ラ・モレーナ・クモナイ（裏）
+            
           `,
           "S+": `
-            アンリミテッドゲームズ（裏）
-            Emma（裏）
             !!!カオスタイム!!!
             †††カオスタイム the DARK†††
+            Calamity Fortune（裏）
+            業 -善なる神とこの世の悪について-（裏）
+            最果の魔法使い（裏）
+            siren's eye
             疾風怒濤（裏）
-            双竜ノ乱
-            !!!チルノのパーフェクトさんすうタイム!!!
+            Central Dogma Pt.1（裏）
+            魑魅魍魎
+            とける（裏）
             トロいか2000
+            ラ・モレーナ・クモナイ（裏）  
+            アンリミテッドゲームズ（裏）
+            Emma（裏）
+            CUT! into the FUTURE（裏）
+            刻竜 ～Kokuryu～（裏）
+            !!!チルノのパーフェクトさんすうタイム!!!
             まださいたま2000
-            モノクロボイス（裏）
+            4+1のそれぞれの未来（裏）
+            
+            
           `,
           "S": `
             オペレート・ミー（裏）
             彁（表）
             仮想現実のテレスコープ（裏）
-            CUT! into the FUTURE（裏）
-            Calamity Fortune（裏）
-            業 -善なる神とこの世の悪について-（裏）
-            狂瀾怒濤（裏）
-            刻竜 ～Kokuryu～（裏）
             Coquette
-            最果の魔法使い（裏）
             Synthesis.（裏）
             スーハー2000
             続・〆ドレー2000
             そして勇者は眠りにつく（裏）
             Taiko Drum Monster（裏）
-            魑魅魍魎
             Challengers
             ≠ＭＭ
-            とける（裏）
+            Hurtling Boys
             初音ミクの消失‐劇場版‐（裏）
             星屑ストラック（裏）
-            4+1のそれぞれの未来（裏）
             Lδchesis（裏）
             λ7708
             わら得る2000
             Xa（裏）
+            狂瀾怒濤（裏）
             氷竜～Kooryu～（裏）
             Genesis Ray（裏）
+            双竜ノ乱
             たいこの2000
             チャーリーダッシュ！
             Nosferatu（裏）
-            Hurtling Boys
             POLARiSNAUT
+            モノクロボイス（裏）
             UFO Swingin'
           `,
           "A+": `
             アムピト◇リーテー
-            美しく忙しきドナウ（裏）
             ouroboros -twin stroke of the end-
             χ談
             カラフル
@@ -434,7 +396,6 @@
             ココドコ？多分ドッカ島！（裏）
             コネクトカラーズ
             GORI × GORI × SafaRI（裏）
-            The Future of the 太鼓ドラム（表）
             万戈イム－一ノ十
             青天の黎明
             Central Dogma Pt.2
@@ -469,15 +430,18 @@
             蒼鷺之火（裏）
             或ル不和
             VERTeX
+            美しく忙しきドナウ（裏）
             ウルトラマンX（裏）
             郢曲／暁闇
             Agent Hustle & Dr. Hassle（表）
             GERBERA
-        　　　雲間を游ぐ
+            雲間を游ぐ
+            The Future of the 太鼓ドラム（表）
             SAVAGE DELIGHT
             〆ドレー2000
             重金属フューギティブ
             Xevel
+            其方、激昂
             超絶技巧系少女
             テトラリュトモスフォビア
             天泣の律
@@ -488,7 +452,6 @@
             Honey Heartbeat ～10 Stars Mix～（裏）
             Parousia
             パン vs ごはん！ 大決戦！（表）
-            FLOWER（裏）
             Mood Swing（裏）
             もぺもぺ
             螺旋周回軌道（裏）
@@ -508,6 +471,7 @@
             チルノのパーフェクトさんすう教室➈周年バージョン（裏）
             儚姫は原初に舞う（裏）
             ひよこ鑑定士さん
+            FLOWER（裏）
             BLAZING VORTEX（裏）
             Player's High
           `,
@@ -524,6 +488,7 @@
             極圏
             沓の子を打つ（裏）
             クラポルポルスカ
+            Goldfish City
             Got more raves?（裏）
             秋竜 ～Shiuryu～（裏）
             疾風怒濤（表）
@@ -532,8 +497,9 @@
             晨星ト鵺
             SUPERNOVA（裏）
             Stick Trick ShowTime!!
-        　　　SoulStone -闇喰イサァカス団-
-        　　　SORA-VII シグナスウォール
+            閃光天舞
+            SoulStone -闇喰イサァカス団-
+            SORA-VII シグナスウォール
             月読命
             電脳幻夜の星言詠
             トイマチック☆パレード!!
@@ -541,7 +507,6 @@
             Hello, Mr.JOKER
             人のお金で焼肉を食したい！（裏）
             FUJIN Rumble
-            ヘイラ（裏）
             Help me, さいたま2000!!
             またさいたま2000
             三瀬川乱舞（裏）
@@ -554,10 +519,12 @@
             Rotter Tarmination（裏）
             六本の薔薇と采の歌（裏）
             What's in the box?
+            あなたとトゥラッタッタ♪（裏）
             Aragami
             Garakuta Doll Play（裏）
             カラフルボイス（裏）
             Calculator
+            気焔万丈神楽
             Kill My Fortune（裏）
             ゲゲゲの鬼太郎（裏）
             刻竜 ～Kokuryu～（表）
@@ -577,7 +544,6 @@
           "C": `
             愛と浄罪の森
             アサガオ
-            あの日出会えたキセキ
             Abyss of hell（裏）
             天照
             Ignis Danse
@@ -586,20 +552,16 @@
             ex寅 Trap!!
             Evidence of evil
             カラ鞠の花
-            気焔万丈神楽
             ギガンティックO.T.N（裏）
             きゅうくらりん（裏）
             共奏鼓祭（裏）
             Chronomia
             弧
-            濃紅
             ゴーストマスク
-            Goldfish City
-            ココロボ
             ゴッドソング（裏）
             God Ray
             鼓舞曲「閻魔」
-        　　　潮騒205号SSS線
+            潮騒205号SSS線
             紫煌ノ乱
             蛇鉄
             須佐之男
@@ -608,23 +570,28 @@
             D's Adventure Note
             D絶対！SAMURAIインザレイン（裏）
             てんぢく2000
+            弩蚊怒夏
             とける（表）
+            Dogbite
             Doppelgangers（裏）
             白鳥の湖～still a duckling～（裏）
             ハンロック
             平等院鳳凰ドン vs 鳥獣戯カッ（裏）
+            ヘイラ（裏）
             ペットショップ大戦
             MagiCatz
+            ミュージック・リボルバー（裏）
             六華の舞
             wonderful ROUTINE
-            あなたとトゥラッタッタ♪（裏）
+            あの日出会えたキセキ
             アンリミテッドゲームズ（表）
             Gloria
+            濃紅
+            ココロボ
             Central Dogma Pt.1（表）
-            弩蚊怒夏
             夏祭り / ジッタリン・ジン（裏）
             Purple Rose Fusion
-            ミュージック・リボルバー（裏）
+            みんなのうた
             MEGALOVANIA（裏）
             4+1のそれぞれの未来
           `,
@@ -643,7 +610,6 @@
             きたさいたま2000
             キャラメル・ジャンキヰ
             Surf Zapping
-            最終鬼畜妹フランドール・S
             Silent Jealousy（裏）
             セイクリッド ルイン（裏）
             零の交響曲（裏）
@@ -652,7 +618,6 @@
             Diving Drive
             ダンガンノーツ（表）
             天下統一録
-            Dogbite
             ドドンガド～ン（裏）
             No Gravity
             ノるどん2000
@@ -670,6 +635,7 @@
             詩謳兎揺蕩兎
             Extreme End
             ゴーゴー・キッチン（裏）
+            最終鬼畜妹フランドール・S
             タイコタイム（裏）
             乱数調整のリバースシンデレラ（裏）
           `,
@@ -709,7 +675,14 @@
             mint tears
           `,
           "未分類": `
-            みんなのうた        
+            Valsqotch
+            Oshama Scramble!（裏）
+            案山子姫 -Princess Scarecrow-（裏）
+            ピッチフェイダ（裏）
+            vs.VIGVANGS（表）
+            vs.VIGVANGS（裏）
+            Lightning Boys（表）
+            Lightning Boys（裏）
           `,
         };
 
@@ -719,8 +692,8 @@
                 const songTitlesText = rawSongDataByGenre[genre];
                 const titlesArray = songTitlesText.split('\n')
                     .map(title => title.trim())
-                    .filter(title => title !== "");
-
+                    .filter(title => title !== ""); 
+                
                 titlesArray.forEach(title => {
                     songsWithGenre.push({ title: title, genre: genre });
                 });
@@ -736,51 +709,10 @@
         const excludedSongsUl = document.getElementById('excludedSongsUl');
         const excludedListSection = document.getElementById('excludedListSection');
         const noExcludedSongsMessage = document.getElementById('noExcludedSongsMessage');
-        // 新しく追加するボタンの要素を取得
-        const returnAllFromExcludedButton = document.getElementById('returnAllFromExcludedButton');
-
-
+        
         const genreOrder = ["SS", "S+", "S", "A+", "A", "B", "C", "D", "E", "F", "未分類"];
-        let excludedSongs = [];
-        let currentDisplayedSongTitle = null;
-
-        // Local Storage Keys
-        const LOCAL_STORAGE_GENRES_KEY = 'selectedGenres';
-        const LOCAL_STORAGE_EXCLUDED_KEY = 'excludedSongs';
-
-        // Function to save current settings to local storage
-        function saveSettings() {
-            const selectedGenreCheckboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]:checked');
-            const selectedGenresToSave = Array.from(selectedGenreCheckboxes).map(cb => cb.value);
-            localStorage.setItem(LOCAL_STORAGE_GENRES_KEY, JSON.stringify(selectedGenresToSave));
-            localStorage.setItem(LOCAL_STORAGE_EXCLUDED_KEY, JSON.stringify(excludedSongs));
-            console.log("Settings saved."); // For debugging
-        }
-
-        // Function to load settings from local storage
-        function loadSettings() {
-            const savedGenresString = localStorage.getItem(LOCAL_STORAGE_GENRES_KEY);
-            const savedExcludedString = localStorage.getItem(LOCAL_STORAGE_EXCLUDED_KEY);
-
-            if (savedGenresString) {
-                const savedGenres = JSON.parse(savedGenresString);
-                // Apply loaded genres to checkboxes
-                const checkboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]');
-                checkboxes.forEach(cb => {
-                    cb.checked = savedGenres.includes(cb.value);
-                });
-            } else {
-                // If no genres saved, select all by default for initial load
-                const checkboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]');
-                checkboxes.forEach(cb => cb.checked = true);
-            }
-
-            if (savedExcludedString) {
-                excludedSongs = JSON.parse(savedExcludedString);
-            }
-            updateExcludedListDisplay(); // Update excluded list display based on loaded data
-            songDisplay.textContent = "「選曲スタート！」ボタンを押してください"; // Set initial display message
-        }
+        let excludedSongs = []; 
+        let currentDisplayedSongTitle = null; 
 
         function populateGenreCheckboxes() {
             const availableGenres = [...new Set(songsWithGenre.map(song => song.genre))];
@@ -795,11 +727,7 @@
 
             genreCheckboxContainer.innerHTML = '';
             sortedGenres.forEach(genre => {
-                // Ensure unique IDs by not sanitizing characters that differentiate genres
-                // Replace problematic characters in IDs with an underscore or similar if necessary,
-                // but ensure the resulting ID is still unique.
-                // For '+', use 'plus'. For '♦', use 'diamond'.
-                const checkboxId = `genre-${genre.replace(/\+/g, 'plus').replace(/♦/g, 'diamond')}`;
+                const checkboxId = `genre-${genre.replace(/\s+/g, '-').replace(/[+♦]/g, '')}`;
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('genre-checkbox-item');
                 const checkbox = document.createElement('input');
@@ -808,7 +736,7 @@
                 checkbox.value = genre;
                 checkbox.name = 'genre';
                 const label = document.createElement('label');
-                label.htmlFor = checkboxId; // Label's htmlFor must match the checkbox's ID
+                label.htmlFor = checkboxId;
                 label.textContent = genre;
                 itemDiv.appendChild(checkbox);
                 itemDiv.appendChild(label);
@@ -839,7 +767,6 @@
                         songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
                         excludeSongButton.style.display = 'none';
                         currentDisplayedSongTitle = null;
-                        saveSettings(); // Save settings after removing a song
                     });
                     li.appendChild(removeButton);
                     excludedSongsUl.appendChild(li);
@@ -847,10 +774,10 @@
             }
         }
 
-        let isRolling = false;
+        let isRolling = false; 
 
         generateButton.addEventListener('click', function() {
-            if (isRolling) return;
+            if (isRolling) return; 
 
             const selectedGenreCheckboxes = genreCheckboxContainer.querySelectorAll('input[name="genre"]:checked');
             const selectedGenres = Array.from(selectedGenreCheckboxes).map(cb => cb.value);
@@ -861,10 +788,10 @@
                 excludeSongButton.style.display = 'none';
                 currentDisplayedSongTitle = null;
                 if (generateButton.disabled) generateButton.disabled = false;
-                return;
+                return; 
             }
 
-            const availableSongs = songsWithGenre.filter(song =>
+            const availableSongs = songsWithGenre.filter(song => 
                 selectedGenres.includes(song.genre) && !excludedSongs.includes(song.title)
             );
 
@@ -878,15 +805,15 @@
             }
 
             isRolling = true;
-            generateButton.disabled = true;
-            excludeSongButton.style.display = 'none';
+            generateButton.disabled = true; 
+            excludeSongButton.style.display = 'none'; 
             songDisplay.classList.add('rolling');
             songDisplay.textContent = '選曲中...';
             currentDisplayedSongTitle = null;
 
             let rollCount = 0;
-            const maxRolls = 20;
-            const rollInterval = 100;
+            const maxRolls = 20; 
+            const rollInterval = 100; 
 
             const rollAnimation = setInterval(() => {
                 const tempRandomIndex = Math.floor(Math.random() * availableSongs.length);
@@ -897,21 +824,20 @@
                     const finalRandomIndex = Math.floor(Math.random() * availableSongs.length);
                     const finalSong = availableSongs[finalRandomIndex];
                     songDisplay.textContent = finalSong.title;
-                    currentDisplayedSongTitle = finalSong.title;
+                    currentDisplayedSongTitle = finalSong.title; 
                     songDisplay.classList.remove('rolling');
                     isRolling = false;
-                    generateButton.disabled = false;
-                    excludeSongButton.style.display = 'inline-block';
+                    generateButton.disabled = false; 
+                    excludeSongButton.style.display = 'inline-block'; 
                 }
             }, rollInterval);
         });
-
+        
         genreCheckboxContainer.addEventListener('change', function(event) {
             if (event.target.type === 'checkbox') {
                  songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
                  excludeSongButton.style.display = 'none';
                  currentDisplayedSongTitle = null;
-                 saveSettings(); // Save settings on genre change
             }
         });
 
@@ -921,7 +847,6 @@
             songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
             excludeSongButton.style.display = 'none';
             currentDisplayedSongTitle = null;
-            saveSettings(); // Save settings on select all
         });
 
         deselectAllButton.addEventListener('click', function() {
@@ -930,18 +855,6 @@
             songDisplay.textContent = "「選曲スタート！」ボタンを押してください";
             excludeSongButton.style.display = 'none';
             currentDisplayedSongTitle = null;
-            saveSettings(); // Save settings on deselect all
-        });
-
-        // Event listener for the new "すべてリストから戻す" button
-        returnAllFromExcludedButton.addEventListener('click', function() {
-            excludedSongs = []; // Clear the excluded songs array
-            updateExcludedListDisplay(); // Update the displayed list
-            songDisplay.textContent = "「選曲スタート！」ボタンを押してください"; // Reset song display message
-            excludeSongButton.style.display = 'none'; // Hide exclude button
-            currentDisplayedSongTitle = null; // Clear currently displayed song
-            saveSettings(); // Save the updated (empty) excluded list
-            console.log("All songs returned from excluded list."); // For debugging
         });
 
         excludeSongButton.addEventListener('click', function() {
@@ -951,13 +864,12 @@
                 songDisplay.textContent = `「${currentDisplayedSongTitle}」を除外しました`;
                 excludeSongButton.style.display = 'none';
                 currentDisplayedSongTitle = null;
-                saveSettings(); // Save settings after excluding a song
             }
         });
 
-        // Initial setup calls:
-        populateGenreCheckboxes(); // Must run first to create checkboxes
-        loadSettings(); // Then load saved settings and apply them
+        populateGenreCheckboxes();
+        updateExcludedListDisplay(); 
+        songDisplay.textContent = "難易度を選んでボタンを押してください";
     </script>
 </body>
 </html>
