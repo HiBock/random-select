@@ -751,7 +751,7 @@
 
             genreCheckboxContainer.innerHTML = '';
             sortedGenres.forEach(genre => {
-                const checkboxId = `genre-${genre.replace(/\s+/g, '-').replace(/[+♦]/g, '')}`;
+                const checkboxId = `genre-${genre.replace(/\s+/g, '-').replace(/\+/g, 'plus').replace(/[♦]/g, '')}`;
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('genre-checkbox-item');
                 const checkbox = document.createElement('input');
